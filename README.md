@@ -19,14 +19,9 @@ Why you should use this plugin?
 
 Installing
 ---
-
-From plugin registry:
-
-	$ cordova plugin add cordova9-plugin-app-preferences
-
 From the repo:
 
-	$ cordova plugin add https://github.com/apla/me.apla.cordova.app-preferences
+	$ cordova plugin add https://github.com/DanielO-JR/cordova.plugin.app-preferences
 
 From a local clone:
 
