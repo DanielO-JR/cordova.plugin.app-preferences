@@ -2,18 +2,13 @@ var mappings = require("./mappings"),
 	platformName = "android";
 
 module.exports = function (context) {
-
-	var
+	var req = context ? context.requireCordovaModule : require,
 		Q = require('q'),
 		path = require('path'),
 		ET = require('elementtree'),
-		cordova = require('cordova'),
-		cordova_lib = cordova.cordova_lib,
-		ConfigParser = cordova_lib.configparser,
-		cordova_util = require('cordova-lib/src/cordova/util'),
-		ofs = require("fs"),
-		fs = require("./filesystem")(Q, require('fs'), path),
-		platforms = {};
+		ConfigParser = require('cordova-common').ConfigParser,
+		cordova_util = req('cordova-lib/src/cordova/util'),
+		fs = require("./filesystem")(Q, require('fs'), path);
 
 	// fs, path, ET, cordova_util, ConfigParser
 
