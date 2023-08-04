@@ -35,7 +35,7 @@ module.exports = function (context) {
 				.then(function(platformMap){
 					console.log("platformMap", platformMap)
 					if ( typeof platformMap == 'object' && platformMap.android ){
-						var majorVersion = parseInt( platformMap.android[0] );
+						var majorVersion = parseInt( platformMap.android );
 						console.log("majorVersion", majorVersion)
 						if ( majorVersion != NaN && majorVersion >= 7 ){
 							return path.join('platforms','android','app','src','main','java');
