@@ -18,12 +18,12 @@ module.exports = function (context) {
 		return cordova_util
 				.getInstalledPlatformsWithVersions(context.opts.projectRoot)
 				.then(function(platformMap){
-					if ( typeof platformMap == 'object' && platformMap.android ){
-						var majorVersion = parseInt( platformMap.android[0] );
-						if ( majorVersion != NaN && majorVersion >= 7 ){
-							return path.join('platforms','android','app','src','main','res');
-						}
-					}
+					// if ( typeof platformMap == 'object' && platformMap.android ){
+					// 	var majorVersion = parseInt( platformMap.android[0] );
+					// 	if ( majorVersion != NaN && majorVersion >= 7 ){
+					// 		return path.join('platforms','android','app','src','main','res');
+					// 	}
+					// }
 					return path.join('platforms','android','res');
 				});
 	}
