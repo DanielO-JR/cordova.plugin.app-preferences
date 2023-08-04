@@ -210,24 +210,30 @@ module.exports = function (context) {
 	}
 
 	function afterPluginInstall () {
+		function log(txt){
+			console.log(txt)
+		}
 		var pathJava = null;
 		return fs.exists('platforms/android')
 			// Check version Platfom installed
 			.then(function () {
+				log(1)
 				return getJavaPath();
 			})
 			// Import preferences into native android project
 			.then(function (pathJ) {
+				log(2)
 				pathJava = pathJ;
 				return fs.readFile(path.resolve(__dirname, '../../src/android/AppPreferencesActivity.template'));
 			})
 			.then(function (tmpl) {
+				log(3)
 				var projectRoot = cordova_lib.findProjectRoot(process.cwd()),
 					projectXml = cordova_util.projectConfig(projectRoot),
 					projectConfig = new ConfigParser(projectXml);
-
+				log(4)
 				var packageName = projectConfig.android_packageName() || projectConfig.packageName();
-
+				log(5)
 				return (
 					//'package me.apla.cordova;\n\n' +
 					//'import ' + packageName + '.R;\n\n' +
@@ -235,11 +241,13 @@ module.exports = function (context) {
 				);
 			})
 			.then(function (data) {
+				log(6)
 				var androidPackagePath = "me.apla.cordova".replace (/\./g, '/');
 				var activityFileName= path.join (pathJava, androidPackagePath, 'AppPreferencesActivity.java');
+				log(7)
+				log("activityFileName " + activityFileName)
 				return fs.writeFile(activityFileName, data);
 			})
-
 			.catch(function (err) {
 				if (err.code === 'NEXIST') {
 					console.log("Platform android not found: skipping");
