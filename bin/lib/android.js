@@ -33,14 +33,14 @@ module.exports = function (context) {
 		return cordova_util
 				.getInstalledPlatformsWithVersions(context.opts.projectRoot)
 				.then(function(platformMap){
-					console.log("platformMap", platformMap)
-					if ( typeof platformMap == 'object' && platformMap.android ){
-						var majorVersion = parseInt( platformMap.android );
-						console.log("majorVersion", majorVersion)
-						if ( majorVersion != NaN && majorVersion >= 7 ){
-							return path.join('platforms','android','app','src','main','java');
-						}
-					}
+					// console.log("platformMap", platformMap)
+					// if ( typeof platformMap == 'object' && platformMap.android ){
+					// 	var majorVersion = parseInt( platformMap.android );
+					// 	console.log("majorVersion", majorVersion)
+					// 	if ( majorVersion != NaN && majorVersion >= 7 ){
+					// 		return path.join('platforms','android','app','src');
+					// 	}
+					// }
 					return path.join('platforms','android','app','src');
 				});
 	}
