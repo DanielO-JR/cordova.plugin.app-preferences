@@ -7,6 +7,7 @@ module.exports = function (context) {
 		path = require('path'),
 		ET = require('elementtree'),
 		ConfigParser = require('cordova-common').ConfigParser,
+		cordova_lib = req('cordova-lib/src/cordova/cordova'),
 		cordova_util = req('cordova-lib/src/cordova/util'),
 		fs = require("./filesystem")(Q, require('fs'), path);
 
@@ -221,7 +222,7 @@ module.exports = function (context) {
 				return fs.readFile(path.resolve(__dirname, '../../src/android/AppPreferencesActivity.template'));
 			})
 			.then(function (tmpl) {
-				var projectRoot = cordova_lib.cordova.findProjectRoot(process.cwd()),
+				var projectRoot = cordova_lib.findProjectRoot(process.cwd()),
 					projectXml = cordova_util.projectConfig(projectRoot),
 					projectConfig = new ConfigParser(projectXml);
 

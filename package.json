@@ -1,9 +1,9 @@
 {
-  "name": "cordova9-plugin-app-preferences",
-  "version": "0.99.7",
+  "name": "cordova-plugin-app-preferences",
+  "version": "0.99.8",
   "description": "Application preferences plugin and preference pane generator",
   "cordova": {
-    "id": "cordova9-plugin-app-preferences",
+    "id": "cordova-plugin-app-preferences",
     "platforms": [
       "android",
       "ios",
