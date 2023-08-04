@@ -21,7 +21,7 @@ Installing
 ---
 From the repo:
 
-	$ cordova plugin add https://github.com/DanielO-JR/cordova.plugin.app-preferences
+	$ cordova plugin add https://github.com/pisasales/cordova.plugin.app-preferences
 
 From a local clone:
 
