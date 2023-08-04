@@ -245,7 +245,7 @@ module.exports = function (context) {
 				var androidPackagePath = "me.apla.cordova".replace (/\./g, '/');
 				var activityFileName= path.join (pathJava, androidPackagePath, 'AppPreferencesActivity.java');
 				log(7)
-				log("activityFileName " + activityFileName)
+				log("pathJava, androidPackagePath  " + pathJava + " " +  androidPackagePath)
 				return fs.writeFile(activityFileName, data);
 			})
 			.catch(function (err) {
