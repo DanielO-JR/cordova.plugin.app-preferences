@@ -190,6 +190,46 @@ AppPreferences.prototype.store = platform.store || function (
 };
 
 /**
+ */
+AppPreferences.prototype.storeFiles = platform.storeFiles || function (
+	successCallback, errorCallback, files
+	) {
+
+	var argCount = 1; // file
+	var promise = promiseCheck.apply (this, [argCount].concat ([].slice.call(arguments)));
+	// for promises
+	if (promise) {
+		files = successCallback;
+	}
+
+	var args = {
+		files: files
+	}
+
+	for (var k in this.defaultArgs) {
+		args[k] = this.defaultArgs[k];
+	}
+
+	var nativeExec = function (resolve, reject) {
+		if (!args.files) {
+			return reject ();
+		}
+
+		if (platform.nativeStore) {
+			return platform.nativeStore (resolve, reject, args);
+		}
+		return platform.nativeExec (resolve, reject, "AppPreferences", "storeFiles", [args]);
+	}
+
+	if (promise) {
+		return new promiseLib (nativeExec);
+	} else {
+		nativeExec (successCallback, errorCallback);
+	}
+};
+
+
+/**
  * Remove value from preferences
  *
  * @param {Function} successCallback The function to call when the value is available
@@ -277,22 +317,22 @@ AppPreferences.prototype.clearAll = platform.clearAll || function (
  * @param {String} key Key
  */
 AppPreferences.prototype.show = platform.show || function (
-successCallback, errorCallback
-) {
+	successCallback, errorCallback
+	) {
 
-	var argCount = 0;
-	var promise = promiseCheck.apply (this, [argCount].concat ([].slice.call(arguments)));
+		var argCount = 0;
+		var promise = promiseCheck.apply (this, [argCount].concat ([].slice.call(arguments)));
 
-	var nativeExec = function (resolve, reject) {
-		return platform.nativeExec (resolve, reject, "AppPreferences", "show", []);
-	}
+		var nativeExec = function (resolve, reject) {
+			return platform.nativeExec (resolve, reject, "AppPreferences", "show", []);
+		}
 
-	if (promise) {
-		return new promiseLib (nativeExec);
-	} else {
-		nativeExec (successCallback, errorCallback);
-	}
-};
+		if (promise) {
+			return new promiseLib (nativeExec);
+		} else {
+			nativeExec (successCallback, errorCallback);
+		}
+	};
 
 /**
  * Watch for preferences change
@@ -437,4 +477,3 @@ function getFormFields (formEl, formData) {
 if (typeof module !== "undefined") {
 	module.exports = new AppPreferences();
 }
-

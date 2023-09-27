@@ -21,6 +21,7 @@
 - (void)clearAll:(CDVInvokedUrlCommand*)command;
 - (void)show:(CDVInvokedUrlCommand*)command;
 - (void)store:(CDVInvokedUrlCommand*)command;
+- (void)storeFiles:(CDVInvokedUrlCommand*)command;
 - (NSString*)getSettingFromBundle:(NSString*)settingsName;
 
 - (NSDictionary*)validateOptions:(CDVInvokedUrlCommand*)command;

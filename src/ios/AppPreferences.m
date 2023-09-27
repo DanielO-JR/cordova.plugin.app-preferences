@@ -416,4 +416,98 @@
 	return nil;
 
 }
+
+/**
+ * stores files to shared area
+ * @param iosSuiteName - container id
+ * @param inFile - map of blobs ids to files paths in common area
+ * @returns map of blobs ids to files paths in shared area
+ */
+
+- (void)storeFiles:(CDVInvokedUrlCommand*)command
+{
+    __block CDVPluginResult* result;
+
+    NSDictionary* options = [self validateOptions:command];
+
+    if (!options)
+        return;
+
+    // finding path for shared files area container
+    NSString *suiteName = [options objectForKey:@"iosSuiteName"];
+    NSURL       *containerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:suiteName];
+    NSString    *containerString = containerURL.absoluteString;
+
+    NSDictionary *inFiles  = [options objectForKey:@"files"];
+    NSMutableDictionary *resultDict =  [NSMutableDictionary dictionary];
+
+    for (NSString *key in inFiles) {
+        storeFile(containerString, inFiles, key, resultDict);
+    }
+
+    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:resultDict];
+    [self.commandDelegate sendPluginResult:result callbackId:[command callbackId]];
+}
+
+/**
+ * worker function, that saves given file in shared area
+ * @param containerString - path of shared area
+ * @param inFiles - files paths in app area
+ * @param key - key for current file
+ * @param resultDict - map w/ paths in shared area
+ */
+static void storeFile(NSString *containerString, NSDictionary *inFiles, NSString *key, NSMutableDictionary *resultDict) {
+	NSFileManager *fm =  [NSFileManager defaultManager];
+
+	NSString *sourceFile= inFiles[key];
+    NSURL *url = [[NSURL alloc] initWithString:sourceFile];
+    NSString *theFileNameExt = [sourceFile lastPathComponent];
+
+    NSString *targetFile = [containerString stringByAppendingString:[NSString stringWithFormat:@"%@",theFileNameExt]];
+    NSURL *targetUrl = [[NSURL alloc] initWithString:targetFile];
+
+    // check source file exists
+    if (![fm fileExistsAtPath:[url path]]){
+        NSLog(@"error: file not found %@", url);
+        NSString *errorStr =  [NSString stringWithFormat:@"!error: file not found %@", url] ;
+        resultDict[key]= errorStr;
+        return;
+    }
+
+    NSError *error = nil;
+
+    // check destination file exists
+    if ([fm fileExistsAtPath:[targetUrl path]]){
+        // checking sizes
+        unsigned long fsSource = [[fm attributesOfItemAtPath:[url path] error:&error] fileSize];
+        unsigned long fsTarget = [[fm attributesOfItemAtPath:[targetUrl path] error:&error] fileSize];
+
+        if (fsSource == fsTarget){
+            resultDict[key] = targetFile;
+            return;
+        }
+        else if (![fm removeItemAtURL:url error:&error]){  // sizes are diffrent, deleting old file
+            NSLog(@"error: %@", error);
+            NSString *errorStr =  [NSString stringWithFormat:@"!error: failed to delete old file %@ %@", sourceFile, error] ;
+            resultDict[key] = errorStr;
+            return;
+        }
+    }
+
+    // copy file to shared area
+    if (![fm copyItemAtURL:url toURL:targetUrl error:&error]){
+        NSLog(@"error: %@", error);
+        NSString *errStr = [NSString stringWithFormat:@"%@", error];
+        if ([errStr containsString:@"No such file or directory"]){
+            errStr = @"ERROR:FILE_NOT_FOUND";
+        }
+        NSString *errorStr =  [NSString stringWithFormat:@"!error:%@", errStr] ;
+        resultDict[key] = errorStr;
+    }
+    else {
+        NSLog(@"success: %@", targetFile);
+        resultDict[key] = targetFile;
+    }
+}
+
 @end

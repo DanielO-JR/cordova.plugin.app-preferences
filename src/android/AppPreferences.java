@@ -18,6 +18,9 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import android.content.RestrictionsManager;
+import android.os.Bundle;
+
 public class AppPreferences extends CordovaPlugin implements OnSharedPreferenceChangeListener {
 
 	//    private static final String LOG_TAG = "AppPreferences";
@@ -200,8 +203,15 @@ public class AppPreferences extends CordovaPlugin implements OnSharedPreferenceC
 	private boolean fetchValueByKey(final SharedPreferences sharedPrefs, final String key, final CallbackContext callbackContext) {
 		cordova.getThreadPool().execute(new Runnable() {public void run() {
 
-			String returnVal = null;
-			if (sharedPrefs.contains(key)) {
+			Context context = cordova.getActivity().getApplicationContext();
+			RestrictionsManager resManager = (RestrictionsManager)context.getSystemService(Context.RESTRICTIONS_SERVICE);
+			Bundle restrictions = resManager.getApplicationRestrictions();
+			// Modified plugin code
+			if (restrictions.containsKey(key)) {
+				returnVal = restrictions.getString(key);
+			}
+			if (sharedPrefs.contains(key) && returnVal == null) {
+				// Original plugin code
 				Object obj = sharedPrefs.getAll().get(key);
 				String objClass = obj.getClass().getName();
 				if (objClass.equals("java.lang.Integer") || objClass.equals("java.lang.Long")) {

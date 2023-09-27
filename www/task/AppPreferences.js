@@ -96,7 +96,35 @@ define (function (require, exports, module) {
 			var cordovaModule = cordova.require ('me.apla.cordova.app-preferences.apppreferences');
 			cordovaModule.store (successCallback, errorCallback, this.forKey, this.inDict, this.value);
 		}
+		,
+		storeFiles: function () {
+			var self = this;
 
+			var args   = {};
+			args.files   = this.files;
+
+			if (!this.files) {
+				self.completed ();
+				return;
+			}
+
+			var successCallback = function (response) {
+				self.completed ();
+			};
+
+			var errorCallback = function (error) {
+				self.failed ({'undefined': true});
+				console.log (error);
+			};
+
+			if (device.platform == "BlackBerry" && parseInt(device.version) == 10) {
+				self.completed ();
+				return;
+			}
+
+			var cordovaModule = cordova.require ('me.apla.cordova.app-preferences.apppreferences');
+			cordovaModule.storeFiles (successCallback, errorCallback, this.files);
+		}
 	});
 
 	dataflows.register ('task', 'AppPreferences', AppPreferenceTask);
