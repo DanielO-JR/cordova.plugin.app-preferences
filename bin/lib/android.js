@@ -2,14 +2,21 @@ var mappings = require("./mappings"),
 	platformName = "android";
 
 module.exports = function (context) {
-	var req = context ? context.requireCordovaModule : require,
-		Q = require('q'),
-		path = require('path'),
-		ET = require('elementtree'),
-		ConfigParser = require('cordova-common').ConfigParser,
-		cordova_lib = req('cordova-lib/src/cordova/cordova'),
-		cordova_util = req('cordova-lib/src/cordova/util'),
-		fs = require("./filesystem")(Q, require('fs'), path);
+
+	var
+		req = require,
+		Q = req('q'),
+		path = req('path'),
+		ET = req('elementtree'),
+		//cordova = req('cordova'),
+		cordova_lib = context.requireCordovaModule('cordova-lib'),
+		ConfigParser = cordova_lib.configparser,
+		cordova_util = context.requireCordovaModule('cordova-lib/src/cordova/util'),
+		ofs = req("fs"),
+		fs = require("./filesystem")(Q, req('fs'), path),
+		platforms = {},
+		pluginPath = "plugins/cordova-plugin-app-preferences",
+		appRestricionsXml = "app_restrictions.xml";
 
 	// fs, path, ET, cordova_util, ConfigParser
 
@@ -18,12 +25,12 @@ module.exports = function (context) {
 		return cordova_util
 				.getInstalledPlatformsWithVersions(context.opts.projectRoot)
 				.then(function(platformMap){
-					// if ( typeof platformMap == 'object' && platformMap.android ){
-					// 	var majorVersion = parseInt( platformMap.android[0] );
-					// 	if ( majorVersion != NaN && majorVersion >= 7 ){
-					// 		return path.join('platforms','android','app','src','main','res');
-					// 	}
-					// }
+					if ( typeof platformMap == 'object' && platformMap.android ){
+						var majorVersion = parseInt( platformMap.android[0] );
+						if ( majorVersion != NaN && majorVersion >= 7 ){
+							return path.join('platforms','android','app','src','main','res');
+						}
+					}
 					return path.join('platforms','android','res');
 				});
 	}
@@ -33,15 +40,13 @@ module.exports = function (context) {
 		return cordova_util
 				.getInstalledPlatformsWithVersions(context.opts.projectRoot)
 				.then(function(platformMap){
-					// console.log("platformMap", platformMap)
-					// if ( typeof platformMap == 'object' && platformMap.android ){
-					// 	var majorVersion = parseInt( platformMap.android );
-					// 	console.log("majorVersion", majorVersion)
-					// 	if ( majorVersion != NaN && majorVersion >= 7 ){
-					// 		return path.join('platforms','android','app','src');
-					// 	}
-					// }
-					return path.join('platforms','android','app','src');
+					if ( typeof platformMap == 'object' && platformMap.android ){
+						var majorVersion = parseInt( platformMap.android[0] );
+						if ( majorVersion != NaN && majorVersion >= 7 ){
+							return path.join('platforms','android','app','src','main','java');
+						}
+					}
+					return path.join('platforms','android','src');
 				});
 	}
 
@@ -195,6 +200,7 @@ module.exports = function (context) {
 				return fs.mkdir(pathXml);
 			})
 			.then(function () { return fs.writeFile( path.join(pathXml,'apppreferences.xml'), preferencesDocument.write()); })
+			.then(function () { return copyAppRestrictions(); })
 
 			// Write localization resource file
 			.then(function () { return fs.mkdir(pathValues); })
@@ -212,9 +218,6 @@ module.exports = function (context) {
 	}
 
 	function afterPluginInstall () {
-		function log(txt){
-			console.log(txt)
-		}
 		var pathJava = null;
 		return fs.exists('platforms/android')
 			// Check version Platfom installed
@@ -227,10 +230,12 @@ module.exports = function (context) {
 				return fs.readFile(path.resolve(__dirname, '../../src/android/AppPreferencesActivity.template'));
 			})
 			.then(function (tmpl) {
-				var projectRoot = cordova_lib.findProjectRoot(process.cwd()),
+				var projectRoot = cordova_lib.cordova.findProjectRoot(process.cwd()),
 					projectXml = cordova_util.projectConfig(projectRoot),
 					projectConfig = new ConfigParser(projectXml);
+
 				var packageName = projectConfig.android_packageName() || projectConfig.packageName();
+
 				return (
 					//'package me.apla.cordova;\n\n' +
 					//'import ' + packageName + '.R;\n\n' +
@@ -240,9 +245,9 @@ module.exports = function (context) {
 			.then(function (data) {
 				var androidPackagePath = "me.apla.cordova".replace (/\./g, '/');
 				var activityFileName= path.join (pathJava, androidPackagePath, 'AppPreferencesActivity.java');
-				log("pathJava, androidPackagePath  " + pathJava + " " +  androidPackagePath)
 				return fs.writeFile(activityFileName, data);
 			})
+
 			.catch(function (err) {
 				if (err.code === 'NEXIST') {
 					console.log("Platform android not found: skipping");
@@ -301,6 +306,22 @@ module.exports = function (context) {
 				}
 
 				throw err;
+			});
+	}
+
+	function copyAppRestrictions() {
+		return fs.exists('platforms/android')
+			// Check version Platfom installed
+			.then(() => {
+				return getResPath();
+			})
+			// Copy app_restrictions xml file
+			.then((pathRes) => {
+				pathXml = path.join(pathRes, 'xml');
+				return fs.copy(path.join(pluginPath, appRestricionsXml), path.join(pathXml, appRestricionsXml));
+			})
+			.catch((err) => {
+				console.log(err);
 			});
 	}
 

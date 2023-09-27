@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<restrictions xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<restriction
+		android:key="pisa-ckey-websocket-url"
+		android:title="Domain"
+		android:restrictionType="string"
+    />
+	<restriction
+		android:key="pisa-ckey-name"
+		android:title="Name"
+		android:restrictionType="string"
+	/>
+    <restriction
+        android:key="pisa-ckey-sales-appname"
+		android:title="Application"
+        android:restrictionType="string" 
+	/>
+	
+</restrictions>
