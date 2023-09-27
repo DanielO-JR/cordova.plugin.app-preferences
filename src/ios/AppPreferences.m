@@ -437,10 +437,10 @@
     NSString *suiteName = [options objectForKey:@"iosSuiteName"];
     NSURL       *containerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:suiteName];
     NSString    *containerString = containerURL.absoluteString;
-
+   
     NSDictionary *inFiles  = [options objectForKey:@"files"];
     NSMutableDictionary *resultDict =  [NSMutableDictionary dictionary];
-
+    
     for (NSString *key in inFiles) {
         storeFile(containerString, inFiles, key, resultDict);
     }
@@ -458,30 +458,30 @@
  */
 static void storeFile(NSString *containerString, NSDictionary *inFiles, NSString *key, NSMutableDictionary *resultDict) {
 	NSFileManager *fm =  [NSFileManager defaultManager];
-
-	NSString *sourceFile= inFiles[key];
+    
+	NSString *sourceFile= inFiles[key];	
     NSURL *url = [[NSURL alloc] initWithString:sourceFile];
     NSString *theFileNameExt = [sourceFile lastPathComponent];
-
+    
     NSString *targetFile = [containerString stringByAppendingString:[NSString stringWithFormat:@"%@",theFileNameExt]];
     NSURL *targetUrl = [[NSURL alloc] initWithString:targetFile];
 
     // check source file exists
-    if (![fm fileExistsAtPath:[url path]]){
+    if (![fm fileExistsAtPath:[url path]]){  
         NSLog(@"error: file not found %@", url);
         NSString *errorStr =  [NSString stringWithFormat:@"!error: file not found %@", url] ;
         resultDict[key]= errorStr;
         return;
     }
-
+    
     NSError *error = nil;
-
+    
     // check destination file exists
     if ([fm fileExistsAtPath:[targetUrl path]]){
         // checking sizes
         unsigned long fsSource = [[fm attributesOfItemAtPath:[url path] error:&error] fileSize];
         unsigned long fsTarget = [[fm attributesOfItemAtPath:[targetUrl path] error:&error] fileSize];
-
+        
         if (fsSource == fsTarget){
             resultDict[key] = targetFile;
             return;
@@ -493,7 +493,7 @@ static void storeFile(NSString *containerString, NSDictionary *inFiles, NSString
             return;
         }
     }
-
+    
     // copy file to shared area
     if (![fm copyItemAtURL:url toURL:targetUrl error:&error]){
         NSLog(@"error: %@", error);

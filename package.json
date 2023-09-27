@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-app-preferences",
-  "version": "0.99.8",
+  "version": "0.99.4",
   "description": "Application preferences plugin and preference pane generator",
   "cordova": {
     "id": "cordova-plugin-app-preferences",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nim901/me.apla.cordova.app-preferences.git"
+    "url": "https://github.com/apla/me.apla.cordova.app-preferences.git"
   },
   "bin": {
     "cordova-app-preferences-generator": "bin/build-app-settings.js"
@@ -27,12 +27,9 @@
     "elementtree": "^0.1.6",
     "ios-sim": ">=5.0.5",
     "jasmine": "^2.3.2",
+    "plist": "1.1.0",
     "q": "^1.4.1",
-    "serve-me": "^0.8.2",
-    "plist": ">=1.2.0",
-    "glob": "^7.1.3",
-    "shelljs": "^0.8.1",
-    "xcode": "^2.0.0"
+    "serve-me": "^0.8.2"
   },
   "keywords": [
     "preferences",
@@ -50,7 +47,7 @@
   "author": "Ivan Baktsheev",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/nim901/me.apla.cordova.app-preferences/issues"
+    "url": "https://github.com/apla/me.apla.cordova.app-preferences/issues"
   },
-  "homepage": "https://github.com/nim901/me.apla.cordova.app-preferences"
+  "homepage": "https://github.com/apla/me.apla.cordova.app-preferences"
 }

@@ -17,7 +17,6 @@ import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.util.Log;
-
 import android.content.RestrictionsManager;
 import android.os.Bundle;
 
@@ -202,14 +201,14 @@ public class AppPreferences extends CordovaPlugin implements OnSharedPreferenceC
 
 	private boolean fetchValueByKey(final SharedPreferences sharedPrefs, final String key, final CallbackContext callbackContext) {
 		cordova.getThreadPool().execute(new Runnable() {public void run() {
-
+			String returnVal = null;
 			Context context = cordova.getActivity().getApplicationContext();
 			RestrictionsManager resManager = (RestrictionsManager)context.getSystemService(Context.RESTRICTIONS_SERVICE);
 			Bundle restrictions = resManager.getApplicationRestrictions();
 			// Modified plugin code
 			if (restrictions.containsKey(key)) {
 				returnVal = restrictions.getString(key);
-			}
+			} 
 			if (sharedPrefs.contains(key) && returnVal == null) {
 				// Original plugin code
 				Object obj = sharedPrefs.getAll().get(key);
@@ -247,7 +246,7 @@ public class AppPreferences extends CordovaPlugin implements OnSharedPreferenceC
 				// Log.d("", "no value");
 				callbackContext.success(returnVal);
 				// callbackContext.sendPluginResult(new PluginResult ());
-			}
+			 }
 
 		}});
 
